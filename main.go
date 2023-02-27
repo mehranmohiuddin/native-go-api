@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/getMovie", handlers.GetMovieHandler)
+	http.HandleFunc("/", handlers.DefaultHandler)
+	http.HandleFunc("/movies", handlers.GetMovieHandler)
 	log.Default().Println("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

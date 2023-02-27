@@ -8,22 +8,31 @@ import (
 	"github.com/mehranmohiuddin/native-go-api/models"
 )
 
-func returnJsonResponse(res http.ResponseWriter, httpCode int, resMessage []byte) {
-	res.Header().Set("Content-Type", "application/json")
-	res.WriteHeader(httpCode)
-	res.Write(resMessage)
-}
-
-func GetMovieHandler(w http.ResponseWriter, r *http.Request) {
-	responseStruct := models.SuccessResponse{
-		Message: "Resource retrieved successfully",
-		Status:  "success",
+func returnJsonResponse(res http.ResponseWriter, httpCode int, message string, status string) {
+	responseStruct := models.Response{
+		Message: message,
+		Success: status,
 	}
 
-	b, err := json.Marshal(responseStruct)
+	byteResponse, err := json.Marshal(responseStruct)
 	if err != nil {
 		log.Fatal("Error in marshalling response struct", err)
 	}
 
-	returnJsonResponse(w, http.StatusOK, b)
+	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(httpCode)
+	res.Write(byteResponse)
+}
+
+func DefaultHandler(w http.ResponseWriter, r *http.Request) {
+	returnJsonResponse(w, http.StatusOK, "Invalid URL", "false")
+}
+
+func GetMovieHandler(w http.ResponseWriter, r *http.Request) {
+	movieID := r.URL.Path[len("/movies/"):]
+	if movieID == "" {
+		returnJsonResponse(w, http.StatusNotFound, "Error getting movie id", "false")
+	} else {
+		returnJsonResponse(w, http.StatusNotFound, "Resource retrieved successfully", "true")
+	}
 }
