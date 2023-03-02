@@ -31,12 +31,30 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 func MoviesHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		getMovieHandler((w))
+		getMovie((w))
+	case "PUT":
+		updateMovie(w)
+	case "POST":
+		createMovie(w)
+	case "DELETE":
+		deleteMovie(w)
 	default:
 		returnJsonResponse(w, http.StatusNotFound, "Method not found", "false")
 	}
 }
 
-func getMovieHandler(w http.ResponseWriter) {
-	returnJsonResponse(w, http.StatusOK, "Successfully called movie handler", "true")
+func getMovie(w http.ResponseWriter) {
+	returnJsonResponse(w, http.StatusOK, "Successfully called get movie handler", "true")
+}
+
+func updateMovie(w http.ResponseWriter) {
+	returnJsonResponse(w, http.StatusOK, "Successfully called update movie handler", "true")
+}
+
+func createMovie(w http.ResponseWriter) {
+	returnJsonResponse(w, http.StatusOK, "Successfully called create movie handler", "true")
+}
+
+func deleteMovie(w http.ResponseWriter) {
+	returnJsonResponse(w, http.StatusOK, "Successfully called delete movie handler", "true")
 }
