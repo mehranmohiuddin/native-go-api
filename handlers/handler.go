@@ -28,11 +28,15 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 	returnJsonResponse(w, http.StatusOK, "Invalid URL", "false")
 }
 
-func GetMovieHandler(w http.ResponseWriter, r *http.Request) {
-	movieID := r.URL.Path[len("/movies/"):]
-	if movieID == "" {
-		returnJsonResponse(w, http.StatusNotFound, "Error getting movie id", "false")
-	} else {
-		returnJsonResponse(w, http.StatusNotFound, "Resource retrieved successfully", "true")
+func MoviesHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		getMovieHandler((w))
+	default:
+		returnJsonResponse(w, http.StatusNotFound, "Method not found", "false")
 	}
+}
+
+func getMovieHandler(w http.ResponseWriter) {
+	returnJsonResponse(w, http.StatusOK, "Successfully called movie handler", "true")
 }
