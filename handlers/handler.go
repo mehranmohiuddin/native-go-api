@@ -2,8 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/mehranmohiuddin/native-go-api/models"
 )
@@ -31,9 +35,9 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 func MoviesHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		getMovie((w))
+		getMovie(w, r)
 	case "PUT":
-		updateMovie(w)
+		updateMovie(w, r)
 	case "POST":
 		createMovie(w)
 	case "DELETE":
@@ -43,11 +47,31 @@ func MoviesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getMovie(w http.ResponseWriter) {
-	returnJsonResponse(w, http.StatusOK, "Successfully called get movie handler", "true")
+func getMovie(w http.ResponseWriter, r *http.Request) {
+	moviesByteArray, err := ioutil.ReadFile("./data/movies.json")
+	if err != nil {
+		log.Fatal("Error reading file")
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(moviesByteArray)
 }
 
-func updateMovie(w http.ResponseWriter) {
+func updateMovie(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 {
+		http.Error(w, "Invalid request URL", http.StatusBadRequest)
+		return
+	}
+	id := parts[2]
+	movieId, err := strconv.Atoi(id)
+	if err != nil {
+		http.Error(w, "Invalid movie ID", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("your path is:", movieId)
 	returnJsonResponse(w, http.StatusOK, "Successfully called update movie handler", "true")
 }
 

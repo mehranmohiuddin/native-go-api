@@ -10,6 +10,7 @@ import (
 func main() {
 	http.HandleFunc("/", handlers.DefaultHandler)
 	http.HandleFunc("/movies", handlers.MoviesHandler)
+	http.HandleFunc("/movies/", handlers.MoviesHandler)
 	log.Default().Println("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
