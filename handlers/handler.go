@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mehranmohiuddin/native-go-api/models"
@@ -38,7 +39,7 @@ func MoviesHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		createMovie(w, r)
 	case "DELETE":
-		deleteMovie(w)
+		deleteMovie(w, r)
 	default:
 		returnJsonResponse(w, http.StatusNotFound, "Method not found", "false")
 	}
@@ -71,6 +72,7 @@ func createMovie(w http.ResponseWriter, r *http.Request) {
 	moviesByteArray, err := ioutil.ReadFile("./data/movies.json")
 	if err != nil {
 		http.Error(w, "Error reading movies file", http.StatusInternalServerError)
+		return
 	}
 
 	var movies []models.Movie
@@ -91,13 +93,58 @@ func createMovie(w http.ResponseWriter, r *http.Request) {
 	moviesJson, err := json.Marshal(movies)
 	if err != nil {
 		http.Error(w, "Error marshalling new movies", http.StatusInternalServerError)
+		return
 	}
 
-	_ = ioutil.WriteFile("./data/movies.json", moviesJson, 0644)
+	err = ioutil.WriteFile("./data/movies.json", moviesJson, 0644)
+	if err != nil {
+		http.Error(w, "Error writing new movies", http.StatusInternalServerError)
+		return
+	}
 
-	returnJsonResponse(w, http.StatusOK, "Successfully called create movie handler", "true")
+	returnJsonResponse(w, http.StatusOK, "Successfully created movie", "true")
 }
 
-func deleteMovie(w http.ResponseWriter) {
-	returnJsonResponse(w, http.StatusOK, "Successfully called delete movie handler", "true")
+func deleteMovie(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) != 3 {
+		http.Error(w, "Invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	id := parts[2]
+
+	moviesByteArray, err := ioutil.ReadFile("./data/movies.json")
+	if err != nil {
+		http.Error(w, "Error reading movies file", http.StatusInternalServerError)
+		return
+	}
+
+	var movies []models.Movie
+	err = json.Unmarshal(moviesByteArray, &movies)
+	if err != nil {
+		http.Error(w, "Error unmarshalling movies", http.StatusInternalServerError)
+		return
+	}
+
+	for i, movie := range movies {
+		if movie.ID == id {
+			movies = append(movies[:i], movies[i+1:]...)
+			break
+		}
+	}
+
+	moviesJson, err := json.Marshal(movies)
+	if err != nil {
+		http.Error(w, "Error marshalling new movies", http.StatusInternalServerError)
+		return
+	}
+
+	err = ioutil.WriteFile("./data/movies.json", moviesJson, 0644)
+	if err != nil {
+		http.Error(w, "Error deleting movie", http.StatusInternalServerError)
+		return
+	}
+
+	returnJsonResponse(w, http.StatusOK, "Successfully deleted movie", "true")
 }
