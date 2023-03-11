@@ -1,14 +1,1 @@
-[
-    {
-        "id": "1",
-        "name": "Avatar",
-        "year": 2009,
-        "director": "James Cameron"
-    },
-    {
-        "id": "2",
-        "name": "The Godfather",
-        "year": 1972,
-        "director": "Francis Ford Coppola"
-    }
-]
+[{"id":"1","name":"Avatar","year":2009,"director":"James Cameron"},{"id":"2","name":"The Godfather","year":1972,"director":"Francis Ford Coppola"},{"id":"3","name":"John Wick","year":2014,"director":"Chad Stahelski"}]
